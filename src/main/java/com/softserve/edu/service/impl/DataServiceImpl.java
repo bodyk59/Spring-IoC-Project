@@ -56,8 +56,7 @@ public class DataServiceImpl implements DataService {
     public void addSolution(String studentName, String sprintName, int score) {
         int studentId = getIdOnName(students, studentName);
         int sprintId = getIdOnName(sprints, sprintName);
-        if (studentId == 0 || sprintId == 0
-                || score <= 0 || score > 12) {
+        if (studentId == 0 || sprintId == 0) {
             //such student or sprint does not exist
             //base check
             //may be useful int the future
@@ -96,7 +95,7 @@ public class DataServiceImpl implements DataService {
 
     public List<Solution> getSolutionsByStudent(Entity student) {
         return getSolutions().stream()
-                .filter(solution1 -> solution1.getIdStudent() == student.getId())
+                .filter(solution -> solution.getIdStudent() == student.getId())
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +106,9 @@ public class DataServiceImpl implements DataService {
     }
 
     public StudentScore getStudentResult(String studentName) {
-        Optional<Entity> student = students.stream().filter(entity -> entity.getName().equals(studentName)).findAny();
+        Optional<Entity> student = students.stream()
+                .filter(entity -> entity.getName().equals(studentName))
+                .findFirst();
 
         if (student.isPresent()) {
             List<SprintScore> sprintScore = getSolutionsByStudent(student.get())
