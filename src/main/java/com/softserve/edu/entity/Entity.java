@@ -3,14 +3,13 @@ package com.softserve.edu.entity;
 import javax.persistence.Id;
 
 public class Entity {
-
     @Id
-    private int id; // must be unique
-
+    private int id;
     private String name;
+    private static int counter;
 
     public Entity(String name) {
-        ++this.id;
+        this.id = ++counter;
         this.name = name;
     }
 
@@ -20,10 +19,6 @@ public class Entity {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
