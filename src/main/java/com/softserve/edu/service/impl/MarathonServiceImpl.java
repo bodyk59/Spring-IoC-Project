@@ -1,7 +1,9 @@
 package com.softserve.edu.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.softserve.edu.entity.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,6 @@ import com.softserve.edu.service.MarathonService;
 
 @Service
 public class MarathonServiceImpl implements MarathonService {
-
     private DataService dataService;
 
     @Autowired
@@ -21,18 +22,22 @@ public class MarathonServiceImpl implements MarathonService {
         this.dataService = dataService;
     }
 
+    private List<String> entityListToStringList(List<Entity> list) {
+        return list.stream()
+                .map(Entity::toString)
+                .collect(Collectors.toList());
+    }
+
     public List<String> getStudents() {
-        // TODO
-        return null;
+        return entityListToStringList(dataService.getStudents());
     }
 
     public List<String> getMentors() {
-        // TODO
-        return null;
+        return entityListToStringList(dataService.getMentors());
     }
 
     public StudentScore studentResult(String studentName) {
-        // TODO
+        //TODO
         return null;
     }
 
