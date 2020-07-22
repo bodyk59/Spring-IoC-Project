@@ -1,11 +1,18 @@
 package com.softserve.edu.service.impl;
 
-import java.util.List;
-
+import com.softserve.edu.dto.SprintScore;
+import com.softserve.edu.dto.StudentScore;
 import com.softserve.edu.entity.Communication;
 import com.softserve.edu.entity.Entity;
 import com.softserve.edu.entity.Solution;
 import com.softserve.edu.service.DataService;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 public class DataServiceImpl implements DataService {
     private List<Entity> students;
@@ -79,13 +86,56 @@ public class DataServiceImpl implements DataService {
         return sprints;
     }
 
-    public List<Communication> getCommunication() {
+    public List<Communication> getCommunications() {
         return communication;
     }
 
-    public List<Solution> getSolution() {
+    public List<Solution> getSolutions() {
         return solution;
     }
 
-    //Maybe something else?
+    public List<Solution> getSolutionsByStudent(Entity student) {
+        return getSolutions().stream()
+                .filter(solution1 -> solution1.getIdStudent() == student.getId())
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Entity> getSprintByName(String name) {
+        return sprints.stream()
+                .filter(sprint -> sprint.getName().equals(name))
+                .findAny();
+    }
+
+    public StudentScore getStudentResult(String studentName) {
+        Optional<Entity> student = students.stream().filter(entity -> entity.getName().equals(studentName)).findAny();
+
+        if (student.isPresent()) {
+            List<SprintScore> sprintScore = getSolutionsByStudent(student.get())
+                    .stream()
+                    .collect(groupingBy(Solution::getIdSprint, summingInt(Solution::getScore)))
+                    .entrySet()
+                    .stream()
+                    .map(entrySet -> new SprintScore(
+                            getSprintById(entrySet.getKey()).get().getName(),
+                            entrySet.getValue())
+                    )
+                    .collect(Collectors.toList());
+            return new StudentScore(studentName, sprintScore);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public Optional<Entity> getSprintById(Integer sprintId) {
+        return sprints.stream().filter(sprint -> sprint.getId() == sprintId).findAny();
+    }
+
+    public Optional<Entity> getStudent(Integer studentId) {
+        return students.stream().filter(student -> student.getId() == studentId).findAny();
+    }
+
+    public Optional<Entity> getMentorByName(String mentorName) {
+        return mentors.stream().filter(entity -> entity.getName().equals(mentorName)).findAny();
+    }
+
 }

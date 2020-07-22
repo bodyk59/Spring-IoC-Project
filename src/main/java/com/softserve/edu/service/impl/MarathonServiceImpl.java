@@ -3,6 +3,8 @@ package com.softserve.edu.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.softserve.edu.dto.SprintScore;
+import com.softserve.edu.entity.Communication;
 import com.softserve.edu.entity.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import com.softserve.edu.service.MarathonService;
 
 @Service
 public class MarathonServiceImpl implements MarathonService {
+
     private DataService dataService;
 
     @Autowired
@@ -37,27 +40,44 @@ public class MarathonServiceImpl implements MarathonService {
     }
 
     public StudentScore studentResult(String studentName) {
-        //TODO
-        return null;
+        return dataService.getStudentResult(studentName);
     }
 
     public List<StudentScore> allStudentsResult() {
-        // TODO
-        return null;
+        return dataService.getStudents().stream()
+                .map(student -> studentResult(student.getName()))
+                .collect(Collectors.toList());
     }
 
     public AverageScore studentAverage(String studentName) {
-        // TODO
-        return null;
+        double averageScore = studentResult(studentName).getSprintScore().stream()
+                .mapToDouble(SprintScore::getScore)
+                .average()
+                .orElse(Double.NaN);
+        return new AverageScore(studentName, averageScore);
     }
 
     public List<AverageScore> allStudentsAverage() {
-        // TODO
-        return null;
+        return dataService.getStudents().stream()
+                .map(student -> studentAverage(student.getName()))
+                .collect(Collectors.toList());
     }
 
     public MentorStudent mentorStudents(String mentorName) {
-        // TODO
-        return null;
+        Entity mentor = dataService.getMentorByName(mentorName)
+                .orElseThrow(IllegalArgumentException::new);
+
+        List<Communication> mentorCommunications = dataService
+                .getCommunications()
+                .stream()
+                .filter(communication -> communication.getIdMentor() == mentor.getId())
+                .collect(Collectors.toList());
+
+        List<String> mentorStudentsList = mentorCommunications.stream()
+                .map(communication -> dataService.getStudent(communication.getIdStudent()).get().getName())
+                .collect(Collectors.toList());
+
+        return new MentorStudent(mentorName, mentorStudentsList);
     }
+
 }

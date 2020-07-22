@@ -1,7 +1,12 @@
 package com.softserve.edu.entity;
 
+import javax.persistence.Id;
+
 public class Entity {
+
+    @Id
     private int id; // must be unique
+
     private String name;
 
     public Entity(String name) {
