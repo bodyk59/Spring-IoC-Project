@@ -5,7 +5,9 @@ import java.util.List;
 import com.softserve.edu.dto.AverageScore;
 import com.softserve.edu.dto.MentorStudent;
 import com.softserve.edu.dto.StudentScore;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface MarathonService {
 
     public List<String> getStudents();
