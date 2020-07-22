@@ -6,7 +6,9 @@ import com.softserve.edu.entity.Communication;
 import com.softserve.edu.entity.Entity;
 import com.softserve.edu.entity.Solution;
 import com.softserve.edu.service.DataService;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,12 +16,13 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
+@Component
 public class DataServiceImpl implements DataService {
-    private List<Entity> students;
-    private List<Entity> mentors;
-    private List<Entity> sprints;
-    private List<Communication> communication;
-    private List<Solution> solution;
+    private final List<Entity> students = new ArrayList<>();
+    private final List<Entity> mentors = new ArrayList<>();
+    private final List<Entity> sprints = new ArrayList<>();
+    private final List<Communication> communication = new ArrayList<>();
+    private final List<Solution> solution = new ArrayList<>();
 
     public void addStudent(String studentName) {
         if (studentName != null) {
@@ -53,12 +56,9 @@ public class DataServiceImpl implements DataService {
     public void addSolution(String studentName, String sprintName, int score) {
         int studentId = getIdOnName(students, studentName);
         int sprintId = getIdOnName(sprints, sprintName);
-        if (studentId == 0 || sprintId == 0) {
+        if (studentId == 0 || sprintId == 0
+                || score <= 0 || score > 12) {
             //such student or sprint does not exist
-            //may be useful int the future
-            return;
-        }
-        if (score <= 0 || score > 12) {
             //base check
             //may be useful int the future
             return;
@@ -137,5 +137,4 @@ public class DataServiceImpl implements DataService {
     public Optional<Entity> getMentorByName(String mentorName) {
         return mentors.stream().filter(entity -> entity.getName().equals(mentorName)).findAny();
     }
-
 }
